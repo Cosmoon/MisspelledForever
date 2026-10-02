@@ -1,0 +1,17 @@
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+*.bak
+
+# Local/generated packaging
+*.zip
+*.7z
+*.rar
+release/
+dist/
+
+# Runtime/dependency caches
+node_modules/
+.env

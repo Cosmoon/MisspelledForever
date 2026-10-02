@@ -1,0 +1,34 @@
+## Interface: 120000, 120001, 16001
+
+## X-Curse-Project-ID: 19114
+## X-Curse-Project-Name: MisspelledForever - Chat Spellchecker
+## X-Curse-Repository-ID: wow/misspelled/mainline
+## X-Website: https://www.curseforge.com/wow/addons/misspelled
+## X-WoWI-ID: 13493
+## X-Original-Author: Nate (Nathan Pieper)
+## X-Port: WoW Forever
+
+## Title: MisspelledForever
+## Version: 1.0.0
+## Author: Nate (Nathan Pieper), Forever port contributors
+## Notes: MisspelledForever watches your chat, flagging missplled words, and offering correctly spelled suggestions.
+## IconTexture: Interface\AddOns\MisspelledForever\Assets\MisspelledForeverLogo
+## eMail: nrpieper@gmail.com
+## X-Email: nrpieper@gmail.com
+## X-Category: Chat
+## DefaultState: Enabled
+## OptionalDeps: LibStub, CallbackHandler-1.0, Ace3
+## X-Embeds: LibStub, CallbackHandler-1.0, Ace3
+## X-LoadOnDemand-Dictionaries: MisspelledForever_Dict_deDE, MisspelledForever_Dict_enGB, MisspelledForever_Dict_enUS, MisspelledForever_Dict_esES, MisspelledForever_Dict_frFR, MisspelledForever_Dict_itIT, MisspelledForever_Dict_nlBE, MisspelledForever_Dict_nlNL, MisspelledForever_Dict_ruRU
+## SavedVariables: MisspelledForever_DB
+
+
+embeds.xml
+Localization\Includes.xml
+
+UTF8\utf8data.lua
+UTF8\utf8.lua
+
+WordDict.lua
+MisspelledForever.lua
+MisspelledForever.xml

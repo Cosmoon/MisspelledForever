@@ -1,0 +1,11 @@
+## Interface: 120000, 120001, 16001
+## Title: MisspelledForever Dictionary - frFR
+## Version: 1.0.0
+## Author: Nate (Nathan Pieper), Forever port contributors
+## Notes: Load-on-demand frFR dictionary module for MisspelledForever.
+## LoadOnDemand: 1
+## RequiredDeps: MisspelledForever
+## X-Original-Author: Nate (Nathan Pieper)
+## X-Port: WoW Forever
+
+Dic_frFR.lua
