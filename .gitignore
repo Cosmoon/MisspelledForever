@@ -1,0 +1,6 @@
+tools/
+tests/
+Data/[Ss]ource*/
+DEVELOPMENT.md
+__pycache__/
+*.pyc
