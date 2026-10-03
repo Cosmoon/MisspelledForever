@@ -2,8 +2,7 @@
 
 ## 1.0.0 - 2026-10-03
 
-First release of the independently rebuilt MisspelledForever for WoW Forever.
-Retains the addon name and logo, with a new spelling engine and interface.
+First release of MisspelledForever for WoW Forever.
 
 ### Spelling and suggestions
 
