@@ -238,6 +238,8 @@ end
 local function rememberNames()
 	local function remember(unit)
 		local name = UnitName(unit)
+		-- Restricted unit names cannot be compared, normalized, or used as keys.
+		if issecretvalue and issecretvalue(name) then return end
 		if name and name ~= "" then Engine.names[Engine.Normalize(name)] = true end
 	end
 	remember("player"); remember("target")

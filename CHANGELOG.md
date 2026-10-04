@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1 - 2026-10-04
+
+- Fixed a Lua error when selecting a target while grouped if WoW returns a
+  restricted (secret) unit name. Secret names are now skipped before comparison
+  or dictionary lookup; accessible player, party, raid, and target names are
+  still recognized.
+
 ## 1.0.0 - 2026-10-03
 
 First release of MisspelledForever for WoW Forever.
