@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2 - 2026-10-04
+
+- Added `warcraft` to the WoW vocabulary so it is recognized as correctly
+  spelled and suggested first for `warcarft` when WoW vocabulary is enabled.
+
 ## 1.0.1 - 2026-10-04
 
 - Fixed a Lua error when selecting a target while grouped if WoW returns a

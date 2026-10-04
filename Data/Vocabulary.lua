@@ -2,7 +2,7 @@ local _, ns = ...
 
 -- Handwritten vocabulary and ranking hints. These are not dictionary imports.
 ns.WowWords = [[
-azeroth kalimdor lordaeron outland northrend stormwind orgrimmar ironforge darnassus
+warcraft azeroth kalimdor lordaeron outland northrend stormwind orgrimmar ironforge darnassus
 undercity thunderbluff silvermoon exodar shattrath dalaran stranglethorn tanaris
 ashenvale felwood winterspring darkshore westfall duskwood redridge dun morogh
 elwynn teldrassil durotar mulgore desolace silithus ungoro un'goro zul'gurub
