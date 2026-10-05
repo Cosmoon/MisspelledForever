@@ -1,6 +1,11 @@
 tools/
 tests/
 Data/[Ss]ource*/
+Data/DictionarySources/
+Data/ValidatedLanguages/
+Data/LanguageSources.json
 DEVELOPMENT.md
 __pycache__/
 *.pyc
+AGENTS.md
+.gitattributes

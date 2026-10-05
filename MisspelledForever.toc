@@ -2,12 +2,28 @@
 ## Title: MisspelledForever
 ## Notes: Local chat spelling checks, useful corrections, and a personal dictionary.
 ## Author: Cosmoon
-## Version: 1.0.2
+## Version: 1.1.0
 ## IconTexture: Interface\AddOns\MisspelledForever\Assets\MisspelledForeverLogo.tga
 ## SavedVariables: MisspelledForeverDB
 
 Data\English.lua
+Data\enGB.lua
+Data\deDE.lua
+Data\frFR.lua
+Data\esES.lua
+Data\itIT.lua
+Data\nlNL.lua
 Data\Vocabulary.lua
+Languages.lua
+Unicode.lua
+Dictionary.lua
 Engine.lua
 UI.lua
+Corrections.lua
+Options.lua
+Minimap.lua
+Highlights.lua
+Settings.lua
+Chat.lua
+Commands.lua
 Core.lua

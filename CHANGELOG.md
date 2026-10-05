@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.1.0 - 2026-10-05
+
+- Split settings, chat handling, dictionary management, commands, and UI components
+  into focused modules for readability and maintenance.
+
+- Added English (UK), German, French, Spanish (Spain), Italian, and Dutch
+  (NL and BE) dictionaries, alongside the existing English (US) dictionary.
+- Added a Languages settings page for enabling up to two dictionaries together.
+  Dutch (NL) and (BE) share the OpenTaal dictionary without duplicating entries.
+- Added accented-letter checking and suggestions, Unicode capitalization, and
+  normalization of decomposed accents while preserving chat cursor positions.
+- Personal words now support Latin letters with accents.
+- Store French and Italian elisions compactly to reduce active dictionary memory.
+- Included original dictionary license notices. Existing installations keep
+  English (US) as their default.
+
 ## 1.0.2 - 2026-10-04
 
 - Added `warcraft` to the WoW vocabulary so it is recognized as correctly
