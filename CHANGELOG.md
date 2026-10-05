@@ -3,7 +3,8 @@
 ## 1.1.0 - 2026-10-05
 
 - Split settings, chat handling, dictionary management, commands, and UI components
-  into focused modules for readability and maintenance.
+  into focused modules grouped in App, Spelling, and UI folders for readability
+  and maintenance.
 
 - Added English (UK), German, French, Spanish (Spain), Italian, and Dutch
   (NL and BE) dictionaries, alongside the existing English (US) dictionary.
