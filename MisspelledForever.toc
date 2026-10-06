@@ -2,7 +2,7 @@
 ## Title: MisspelledForever
 ## Notes: Local chat spelling checks, useful corrections, and a personal dictionary.
 ## Author: Cosmoon
-## Version: 1.1.0
+## Version: 1.1.1
 ## IconTexture: Interface\AddOns\MisspelledForever\Assets\MisspelledForeverLogo.tga
 ## SavedVariables: MisspelledForeverDB
 
