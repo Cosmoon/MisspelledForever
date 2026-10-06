@@ -2,8 +2,8 @@
 
 ## 1.1.1 - 2026-10-06
 
-- Remove spelling highlight colors before Enter validates chat, so misspelled
-  messages are sent normally even while suggestions are open.
+- Removed send block when words are misspelled, so misspelled messages are sent 
+  normally even while suggestions are open.
 
 ## 1.1.0 - 2026-10-05
 
