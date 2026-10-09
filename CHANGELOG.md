@@ -2,15 +2,7 @@
 
 ## 1.1.2 - 2026-10-09
 
-- Speed up the complete correction search by skipping dictionary prefixes that
-  cannot match. All suggestions appear together with the existing match rules
-  and ranking preserved.
-- Prepare and cache corrections after a short typing pause, and reuse searches
-  already in progress when a misspelled word is clicked.
-- Reduce the spelling-check delay from 300 ms to 150 ms.
-- Refresh player names when chat opens. Stop searches, frame updates, and
-  target/group/click monitoring when the chat input closes.
-- Prevent hidden chat text changes from starting spelling work.
+- Speed up the complete correction search.
 - Reduce temporary memory allocations during correction searches.
 
 ## 1.1.1 - 2026-10-06
