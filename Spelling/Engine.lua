@@ -107,10 +107,11 @@ function Engine.Distance(source, target, limit)
 	if math.abs(n - m) > limit then return limit + 1 end
 	if n == 0 then return m end
 	if m == 0 then return n end
-	local previous, beforePrevious = {}, {}
+	local previous, beforePrevious, current = {}, {}, {}
 	for j = 0, m do previous[j] = j end
 	for i = 1, n do
-		local current = { [0] = i }
+		for j in pairs(current) do current[j] = nil end
+		current[0] = i
 		local from, to = math.max(1, i - limit), math.min(m, i + limit)
 		local rowMin = limit + 1
 		for j = from, to do
@@ -126,7 +127,7 @@ function Engine.Distance(source, target, limit)
 			current[j], rowMin = value, math.min(rowMin, value)
 		end
 		if rowMin > limit then return limit + 1 end
-		beforePrevious, previous = previous, current
+		beforePrevious, previous, current = previous, current, beforePrevious
 	end
 	return previous[m] or limit + 1
 end
@@ -162,10 +163,12 @@ function Engine:Suggest(word, options, yieldWork)
 		local char = chars[i]
 		letterCounts[char] = (letterCounts[char] or 0) + 1
 	end
+	local used = {}
 	local function enoughSharedLetters(candidate, candidateLimit)
 		-- Any result within the edit limit must preserve this many letters.
 		-- This cheap bound avoids running the matrix for unrelated words.
-		local matched, used = 0, {}
+		local matched = 0
+		for char in pairs(used) do used[char] = nil end
 		local required = math.max(length, #candidate) - candidateLimit
 		local ascii = type(candidate) == "string"
 		for i = 1, #candidate do
@@ -180,10 +183,9 @@ function Engine:Suggest(word, options, yieldWork)
 		end
 		return matched >= required
 	end
-	local function add(candidate, forced)
+	local function add(candidate, forced, knownDistance)
 		if prefix and not self:Elision(prefix, candidate, true) then return end
 		if seen[candidate] or candidate == word then return end
-		seen[candidate] = true
 		local ascii = not candidate:find("[\128-\255]")
 		local candidateChars = ascii and candidate or U.Characters(candidate)
 		-- Wider matches must retain both endpoints. The tier is based on the
@@ -191,9 +193,10 @@ function Engine:Suggest(word, options, yieldWork)
 		local sameEnds = chars[1] == (ascii and candidate:sub(1, 1) or candidateChars[1])
 			and chars[length] == (ascii and candidate:sub(-1) or candidateChars[#candidateChars])
 		local candidateLimit = sameEnds and limit or closeLimit
-		if not forced and not enoughSharedLetters(candidateChars, candidateLimit) then return end
-		local distance = self.Distance(word, candidate, candidateLimit)
+		if not knownDistance and not forced and not enoughSharedLetters(candidateChars, candidateLimit) then return end
+		local distance = knownDistance or self.Distance(word, candidate, candidateLimit)
 		if not forced and distance > candidateLimit then return end
+		seen[candidate] = true
 		local score = distance + (self.common[candidate] and 0.2 or 0.45)
 		if options.wowVocabulary and self.wow[candidate] then score = distance + 0.08 end
 		if self.personal[candidate] then score = distance + 0.1 end
@@ -210,6 +213,20 @@ function Engine:Suggest(word, options, yieldWork)
 		candidates[#candidates + 1] = { word = candidate, distance = distance, score = score,
 			wide = not forced and distance > closeLimit }
 	end
+	local function results()
+		table.sort(candidates, function(a, b)
+			if a.wide ~= b.wide then return not a.wide end
+			if a.score ~= b.score then return a.score < b.score end
+			local ar, br = self.common[a.word] or 99999, self.common[b.word] or 99999
+			if ar ~= br then return ar < br end
+			return a.word < b.word
+		end)
+		local result = {}
+		for i = 1, math.min(options.maxSuggestions, #candidates) do
+			result[i] = (prefix and prefix .. "'" or "") .. candidates[i].word
+		end
+		return result
+	end
 	if hint then
 		local valid = true
 		for piece in hint:gmatch("%S+") do
@@ -217,30 +234,25 @@ function Engine:Suggest(word, options, yieldWork)
 		end
 		if valid then add(hint, true) end
 	end
-	local visited = 0
-	for size = math.max(1, length - limit), length + limit do
-		for _, candidate in ipairs(self.byLength[size] or {}) do
-			if self.words[candidate] or prefix then add(candidate) end
-			visited = visited + 1
-			if yieldWork and visited % 120 == 0 then yieldWork() end
+	if rawget(self, "searchSorted") then
+		ns.Dictionary.VisitSimilar(self, chars, closeLimit, limit, function(candidate, distance)
+			if self.words[candidate] or prefix then add(candidate, false, distance) end
+		end, yieldWork)
+	else
+		local visited = 0
+		for size = math.max(1, length - limit), length + limit do
+			for _, candidate in ipairs(self.byLength[size] or {}) do
+				if self.words[candidate] or prefix then add(candidate) end
+				visited = visited + 1
+				if yieldWork and visited % 120 == 0 then yieldWork() end
+			end
 		end
 	end
 	if options.wowVocabulary then
 		for candidate in pairs(self.wow) do add(candidate) end
 	end
 	for candidate in pairs(self.personal) do add(candidate) end
-	table.sort(candidates, function(a, b)
-		if a.wide ~= b.wide then return not a.wide end
-		if a.score ~= b.score then return a.score < b.score end
-		local ar, br = self.common[a.word] or 99999, self.common[b.word] or 99999
-		if ar ~= br then return ar < br end
-		return a.word < b.word
-	end)
-	local result = {}
-	for i = 1, math.min(options.maxSuggestions, #candidates) do
-		result[i] = (prefix and prefix .. "'" or "") .. candidates[i].word
-	end
-	return result
+	return results()
 end
 
 function Engine.Replace(text, token, replacement, cursor)

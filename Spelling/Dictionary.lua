@@ -100,6 +100,9 @@ function Dictionary:SetLanguages(languages)
 			self.elisionPacks[#self.elisionPacks + 1] = data
 		end
 	end
+	-- Sorting the existing arrays allows prefix pruning without a second word index.
+	for _, bucket in pairs(self.byLength) do table.sort(bucket) end
+	self.searchSorted = true
 end
 
 function Dictionary:Elision(prefix, stem, suggest)
@@ -118,4 +121,90 @@ function Dictionary:Contains(word, includeWow)
 	local prefix, stem = word:match("^([^']+)'(.+)$")
 	return self.words[word] ~= nil or self.personal[word] or self.names[word]
 		or (includeWow and self.wow[word]) or (prefix and self:Elision(prefix, stem, false)) or false
+end
+
+-- Traverse a virtual prefix tree over sorted arrays. Rows are shared by words
+-- with the same prefix; whole ranges are skipped once no completion can fit.
+-- This uses the same adjacent-transposition distance as Engine.Distance.
+function Dictionary.VisitSimilar(self, chars, closeLimit, wideLimit, visit, yieldWork)
+	local length = #chars
+	local rows, path = { [0] = {} }, {}
+	for j = 0, length do rows[0][j] = j end
+	local work = 0
+	local function checkpoint()
+		work = work + 1
+		if yieldWork and work % 64 == 0 then yieldWork() end
+	end
+	local function walk(bucket, first, last, depth, offset, size)
+		local row = rows[depth]
+		if not row then
+			row = {}; rows[depth] = row
+			for j = 0, length do row[j] = closeLimit + 1 end
+		end
+		local from, to = math.max(1, depth - closeLimit), math.min(length, depth + closeLimit)
+		local previous, older = rows[depth - 1], rows[depth - 2]
+		local k = first
+		while k <= last do
+			local lead = bucket[k]:byte(offset)
+			local bytes = lead < 128 and 1 or (lead < 224 and 2 or (lead < 240 and 3 or 4))
+			local char = bucket[k]:sub(offset, offset + bytes - 1)
+			local nextOffset = offset + bytes
+			local edge = bucket[k]:sub(1, nextOffset - 1)
+			-- Find the end of this shared prefix without visiting its words.
+			local low, high = k + 1, last + 1
+			while low < high do
+				local mid = math.floor((low + high) / 2)
+				if bucket[mid]:sub(1, nextOffset - 1) == edge then low = mid + 1 else high = mid end
+			end
+			local branchEnd = low - 1
+			row[0] = depth
+			local best = depth + math.abs(length - size + depth)
+			for j = from, to do
+				local value = previous[j] + 1
+				local other = row[j - 1] + 1; if other < value then value = other end
+				other = previous[j - 1] + (char == chars[j] and 0 or 1)
+				if other < value then value = other end
+				if depth > 1 and j > 1 and char == chars[j - 1] and path[depth - 1] == chars[j] then
+					other = older[j - 2] + 1; if other < value then value = other end
+				end
+				row[j] = value
+				-- Include the unavoidable remaining length difference in the bound.
+				local delta = length - j - size + depth
+				local bound = value + (delta < 0 and -delta or delta)
+				if bound < best then best = bound end
+			end
+			checkpoint()
+			if best <= closeLimit then
+				if depth == size then
+					if row[length] <= closeLimit then visit(bucket[k], row[length]) end
+				else
+					path[depth] = char
+					walk(bucket, k, branchEnd, depth + 1, nextOffset, size)
+				end
+			end
+			k = branchEnd + 1
+		end
+	end
+	for size = math.max(1, length - closeLimit), length + closeLimit do
+		local bucket = self.byLength[size]
+		if bucket then walk(bucket, 1, #bucket, 1, 1, size) end
+	end
+	if wideLimit <= closeLimit then return end
+	-- Wider matches require both endpoints. Only inspect the matching first-
+	-- letter range, and reject other endings before calculating any distance.
+	local firstChar, lastChar = chars[1], chars[length]
+	for size = math.max(1, length - wideLimit), length + wideLimit do
+		local bucket = self.byLength[size] or {}
+		local low, high = 1, #bucket + 1
+		while low < high do
+			local mid = math.floor((low + high) / 2)
+			if bucket[mid]:sub(1, #firstChar) < firstChar then low = mid + 1 else high = mid end
+		end
+		for i = low, #bucket do
+			local candidate = bucket[i]
+			if candidate:sub(1, #firstChar) ~= firstChar then break end
+			if candidate:sub(-#lastChar) == lastChar then visit(candidate) end
+			checkpoint()
+		end
+	end
 end

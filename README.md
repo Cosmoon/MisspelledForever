@@ -8,7 +8,9 @@ Inspired by **Misspelled**, created by [nrpieper](https://www.curseforge.com/mem
 
 Type your message as usual. Once you finish a word with a space or punctuation, the addon checks its spelling. Words it does not recognize appear in your chosen highlight color.
 
-Click a colored word to see suggestions, then click the spelling you want. Only that occurrence is replaced, and its capitalization is preserved. You can also right-click a word to check it before typing a space.
+Click a colored word to see suggestions, then click the spelling you want. The complete suggestion list appears together. Only that occurrence is replaced, and its capitalization is preserved. You can also right-click a word to check it before typing a space.
+
+After a short typing pause, corrections for completed misspelled words are prepared in small slices and cached, so clicking often shows them immediately. Searches stop when chat closes, and the addon stops its frame updates when there is no pending work. Player names are refreshed when you open chat; target, group, and outside-click events are monitored only while a chat input is visible. Dictionaries stay in memory for offline lookup and language switching.
 
 You stay in control: suggestions open only when you click a word. Continuing to type, clicking elsewhere, or closing the chat box dismisses them. The addon never sends a message or applies a correction automatically.
 

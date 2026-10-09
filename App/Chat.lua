@@ -40,12 +40,13 @@ function ns.DismissPanel()
 end
 
 function ns.OptionsChanged()
+	ns.WakeChat()
 	invalidateCache()
 	Engine:SetLanguages(ns.db.languages)
 	UI:RefreshOptions(); UI:UpdateMinimap()
 	UI.panel:Hide()
 	UI:ClearMarks()
-	state.pendingAt = GetTime() + 0.05
+	state.pendingAt = Chat:IsOpen() and (GetTime() + 0.05) or nil
 end
 
 function ns.ClearIgnores()
@@ -72,6 +73,7 @@ function ns.LearnSelected()
 end
 
 function ns.IgnoreSelected()
+	ns.WakeChat()
 	if not selectionIsCurrent() then return end
 	state.ignored[state.selected.normalized] = true
 	state.job = nil
@@ -81,6 +83,7 @@ function ns.IgnoreSelected()
 end
 
 function ns.ApplyCorrection(word)
+	ns.WakeChat()
 	if not selectionIsCurrent() then return end
 	local box = state.box
 	local value, cursor = Engine.Replace(UI:RawText(box), state.selected, word, select(2, UI:RawText(box)))
@@ -99,21 +102,29 @@ function ns.ApplyCorrection(word)
 	state.pendingAt = GetTime() + 0.05
 end
 
-function ns.SelectIssue(issue)
-	if not state.box or UI:RawText(state.box) ~= state.snapshot then return end
-	state.selected = issue
-	UI:OpenSuggestions(state.box, issue)
-	local cached = state.cache[issue.normalized]
-	if cached then UI:ShowSuggestions(issue.word, cached, false); return end
-	UI:ShowSuggestions(issue.word, {}, true)
+local function startJob(issue)
 	local job = { word = issue.normalized, snapshot = state.snapshot, issue = issue }
 	job.thread = coroutine.create(function()
 		return Engine:Suggest(job.word, ns.db, function() coroutine.yield() end)
 	end)
 	state.job = job
+	ns.WakeChat()
+end
+
+function ns.SelectIssue(issue)
+	if not state.box or UI:RawText(state.box) ~= state.snapshot then return end
+	state.selected = issue
+	UI:OpenSuggestions(state.box, issue)
+	local cached = state.cache[issue.normalized]
+	if cached then state.job = nil; UI:ShowSuggestions(issue.word, cached, false); return end
+	UI:ShowSuggestions(issue.word, {}, true)
+	if state.job and state.job.word == issue.normalized and state.job.snapshot == state.snapshot then
+		state.job.issue = issue
+	else startJob(issue) end
 end
 
 local function check(box, force)
+	local previousJob = state.job
 	state.job, state.selected = nil, nil
 	if not box or not box:IsShown() or not ns.db.enabled or not channelEnabled(box) then
 		UI.panel:Hide(); UI:ClearMarks(box); return
@@ -130,6 +141,31 @@ local function check(box, force)
 	state.box, state.snapshot, state.issues = box, text, issues
 	UI.panel:Hide()
 	UI:ShowMarks(box, issues)
+	if previousJob and previousJob.snapshot == text then state.job = previousJob end
+end
+
+local function rememberNames()
+	local function remember(unit)
+		local name = UnitName(unit)
+		-- Restricted unit names cannot be compared, normalized, or used as keys.
+		if issecretvalue and issecretvalue(name) then return end
+		if name and name ~= "" then Engine.names[Engine.Normalize(name)] = true end
+	end
+	remember("player"); remember("target")
+	for i = 1, 4 do remember("party" .. i) end
+	for i = 1, 40 do remember("raid" .. i) end
+end
+
+function Chat:IsOpen()
+	return state.box and state.box:IsShown()
+end
+
+local function activateBox(box)
+	state.box, state.pendingAt = box, GetTime() + 0.1
+	state.job, state.selected = nil, nil
+	rememberNames()
+	ns.SetChatActive(true)
+	ns.WakeChat()
 end
 
 local function wireBox(box)
@@ -148,20 +184,25 @@ local function wireBox(box)
 		end)
 	end
 	box:HookScript("OnTextChanged", function(self)
-		if UI:IsFormatting(self) then return end
+		if UI:IsFormatting(self) or not self:IsShown() then return end
+		ns.WakeChat()
 		UI:ClearMarks(self)
-		state.box, state.pendingAt, state.force = self, GetTime() + 0.3, false
+		state.box, state.pendingAt, state.force = self, GetTime() + 0.15, false
 		state.job, state.selected = nil, nil
 		UI.panel:Hide()
 	end)
-	box:HookScript("OnShow", function(self)
-		state.box, state.pendingAt = self, GetTime() + 0.1
-	end)
+	box:HookScript("OnShow", activateBox)
 	box:HookScript("OnHide", function(self)
 		if state.box == self then
 			state.job, state.selected, state.pendingAt, state.force = nil, nil, nil, false
+			state.clickBox, state.clickButton, state.clickAt = nil, nil, nil
+			state.box, state.snapshot, state.issues = nil, nil, nil
+			ns.SetChatActive(false)
 			UI.panel:Hide()
 			UI:ClearMarks(self)
+			for other in pairs(state.hooked) do
+				if other ~= self and other:IsShown() then activateBox(other); break end
+			end
 		end
 	end)
 	box:HookScript("OnMouseDown", function(self)
@@ -177,15 +218,18 @@ local function wireBox(box)
 		if down and (math.abs(x - down[1]) > 3 or math.abs(y - down[2]) > 3) then
 			ns.DismissPanel(); return
 		end
+		ns.WakeChat()
 		-- Resolve the word after the native edit box finishes moving its caret.
 		state.clickBox, state.clickButton, state.clickAt = self, mouse, GetTime() + 0.01
 		state.pendingAt = nil
 	end)
 	box:HookScript("OnAttributeChanged", function(self, attribute)
-		if attribute == "chatType" then
+		if attribute == "chatType" and self:IsShown() then
+			ns.WakeChat()
 			state.box, state.pendingAt = self, GetTime() + 0.05
 		end
 	end)
+	if box:IsShown() then activateBox(box) end
 end
 
 local function wireAllBoxes()
@@ -193,17 +237,6 @@ local function wireAllBoxes()
 	for i = 1, NUM_CHAT_WINDOWS or 10 do wireBox(_G["ChatFrame" .. i .. "EditBox"]) end
 end
 
-local function rememberNames()
-	local function remember(unit)
-		local name = UnitName(unit)
-		-- Restricted unit names cannot be compared, normalized, or used as keys.
-		if issecretvalue and issecretvalue(name) then return end
-		if name and name ~= "" then Engine.names[Engine.Normalize(name)] = true end
-	end
-	remember("player"); remember("target")
-	for i = 1, 4 do remember("party" .. i) end
-	for i = 1, 40 do remember("raid" .. i) end
-end
 
 function Chat:Update()
 	if not ns.db then return end
@@ -222,28 +255,49 @@ function Chat:Update()
 		state.pendingAt, state.force = nil, false
 		check(state.box, force)
 	end
+	-- Warm the bounded cache for completed misspellings while chat is open.
+	if not state.job and not state.pendingAt and not state.selected and state.box
+		and state.box:IsShown() and ns.db.enabled and channelEnabled(state.box) then
+		for _, issue in ipairs(state.issues or {}) do
+			if not state.cache[issue.normalized] then startJob(issue); break end
+		end
+	end
 	local job = state.job
 	if job then
-		if not selectionIsCurrent() or state.selected ~= job.issue then state.job = nil; return end
+		if not state.box or not state.box:IsShown() or not ns.db.enabled
+			or not channelEnabled(state.box) or UI:RawText(state.box) ~= job.snapshot then
+			state.job = nil; return
+		end
 		local start = debugprofilestop and debugprofilestop() or 0
 		-- Suggestions run in short slices so chat stays responsive.
-		for _ = 1, debugprofilestop and 20 or 4 do
+		for _ = 1, debugprofilestop and 200 or 4 do
 			local ok, result = coroutine.resume(job.thread)
 			if not ok then
 				state.job = nil
-				UI:ShowSuggestions(job.issue.word, {}, false)
+				if state.selected == job.issue then UI:ShowSuggestions(job.issue.word, {}, false) end
+				cacheResult(job.word, {})
 				geterrorhandler()("MisspelledForever suggestion error: " .. tostring(result))
 				break
 			end
 			if coroutine.status(job.thread) == "dead" then
 				state.job = nil
 				cacheResult(job.word, result)
-				UI:ShowSuggestions(job.issue.word, result, false)
+				if state.selected == job.issue then UI:ShowSuggestions(job.issue.word, result, false) end
 				break
 			end
-			if debugprofilestop and debugprofilestop() - start >= 2 then break end
+			if debugprofilestop and debugprofilestop() - start >= (state.selected and 4 or 2) then break end
 		end
 	end
+end
+
+function Chat:HasWork()
+	if state.pendingAt or state.clickAt or state.job then return true end
+	if state.box and state.box:IsShown() and ns.db.enabled and channelEnabled(state.box) and not state.selected then
+		for _, issue in ipairs(state.issues or {}) do
+			if not state.cache[issue.normalized] then return true end
+		end
+	end
+	return false
 end
 
 function Chat:Initialize()
@@ -267,7 +321,7 @@ function Chat:HandleEvent(event)
 		ns.DismissPanel()
 	end
 	if event == "PLAYER_LOGIN" or event == "UPDATE_CHAT_WINDOWS" then wireAllBoxes() end
-	if event == "PLAYER_LOGIN" or event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_TARGET_CHANGED" then rememberNames() end
+	if self:IsOpen() and (event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_TARGET_CHANGED") then rememberNames() end
 end
 
 function Chat:PrintDebug()
