@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.3 - 2026-10-13
+
+- Fixed messages failing to send with Enter in dungeon party chat and raid
+  chat by preserving Blizzard's native Enter and send handlers. Spelling
+  display colors are removed before native message validation.
+- Verified party, raid, and instance chat sending in game.
+
 ## 1.1.2 - 2026-10-09
 
 - Speed up the complete correction search.

@@ -171,18 +171,19 @@ end
 local function wireBox(box)
 	if not box or state.hooked[box] then return end
 	state.hooked[box] = true
-	-- Strip display colors before the native Enter handler validates the input.
-	-- A post-hook or SendText cleanup runs too late if validation rejects it.
-	local onEnter = box:GetScript("OnEnterPressed")
-	if onEnter then
-		box:SetScript("OnEnterPressed", function(self, ...)
-			state.job, state.selected, state.pendingAt = nil, nil, nil
-			state.clickBox, state.clickButton, state.clickAt = nil, nil, nil
-			UI.panel:Hide()
-			UI:ClearMarks(self)
-			return onEnter(self, ...)
-		end)
+	-- Clean display tags on the key event, before native Enter validation.
+	-- Never replace Blizzard's Enter or send functions: their execution must
+	-- remain secure when chat is restricted in combat, dungeons, or raids.
+	local function finishInput(self)
+		state.job, state.selected, state.pendingAt = nil, nil, nil
+		state.clickBox, state.clickButton, state.clickAt = nil, nil, nil
+		UI.panel:Hide()
+		UI:ClearMarks(self)
 	end
+	box:HookScript("OnKeyDown", function(self, key)
+		if key == "ENTER" or key == "NUMPADENTER" then finishInput(self) end
+	end)
+	box:HookScript("OnEnterPressed", finishInput)
 	box:HookScript("OnTextChanged", function(self)
 		if UI:IsFormatting(self) or not self:IsShown() then return end
 		ns.WakeChat()
@@ -302,15 +303,6 @@ end
 
 function Chat:Initialize()
 	wireAllBoxes()
-	-- Clean display-only colors before Blizzard parses, sends, or saves
-	-- history. Item links and user formatting retain their original tags.
-	if ChatEdit_SendText then
-		local originalSend = ChatEdit_SendText
-		ChatEdit_SendText = function(box, ...)
-			UI:ClearMarks(box)
-			return originalSend(box, ...)
-		end
-	end
 	if ChatEdit_ActivateChat then hooksecurefunc("ChatEdit_ActivateChat", wireBox) end
 	if FCF_OpenTemporaryWindow then hooksecurefunc("FCF_OpenTemporaryWindow", wireAllBoxes) end
 end
