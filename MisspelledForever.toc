@@ -2,7 +2,7 @@
 ## Title: MisspelledForever
 ## Notes: Local chat spelling checks, useful corrections, and a personal dictionary.
 ## Author: Cosmoon
-## Version: 1.1.3
+## Version: 1.1.4
 ## IconTexture: Interface\AddOns\MisspelledForever\Assets\MisspelledForeverLogo.tga
 ## SavedVariables: MisspelledForeverDB
 
@@ -14,8 +14,51 @@ Data\esES.lua
 Data\itIT.lua
 Data\nlNL.lua
 Data\Vocabulary.lua
+Data\WoW\deDE\Bosses.lua
+Data\WoW\deDE\Classes.lua
+Data\WoW\deDE\Items.lua
+Data\WoW\deDE\Jargon.lua
+Data\WoW\deDE\Locations.lua
+Data\WoW\deDE\Professions.lua
+Data\WoW\deDE\Spells.lua
+Data\WoW\enUS\Bosses.lua
+Data\WoW\enUS\Classes.lua
+Data\WoW\enUS\Items.lua
+Data\WoW\enUS\Jargon.lua
+Data\WoW\enUS\Locations.lua
+Data\WoW\enUS\Professions.lua
+Data\WoW\enUS\Spells.lua
+Data\WoW\esES\Bosses.lua
+Data\WoW\esES\Classes.lua
+Data\WoW\esES\Items.lua
+Data\WoW\esES\Jargon.lua
+Data\WoW\esES\Locations.lua
+Data\WoW\esES\Professions.lua
+Data\WoW\esES\Spells.lua
+Data\WoW\frFR\Bosses.lua
+Data\WoW\frFR\Classes.lua
+Data\WoW\frFR\Items.lua
+Data\WoW\frFR\Jargon.lua
+Data\WoW\frFR\Locations.lua
+Data\WoW\frFR\Professions.lua
+Data\WoW\frFR\Spells.lua
+Data\WoW\itIT\Bosses.lua
+Data\WoW\itIT\Classes.lua
+Data\WoW\itIT\Items.lua
+Data\WoW\itIT\Jargon.lua
+Data\WoW\itIT\Locations.lua
+Data\WoW\itIT\Professions.lua
+Data\WoW\itIT\Spells.lua
+Data\WoW\nlNL\Bosses.lua
+Data\WoW\nlNL\Classes.lua
+Data\WoW\nlNL\Items.lua
+Data\WoW\nlNL\Jargon.lua
+Data\WoW\nlNL\Locations.lua
+Data\WoW\nlNL\Professions.lua
+Data\WoW\nlNL\Spells.lua
 Spelling\Languages.lua
 Spelling\Unicode.lua
+Spelling\WowVocabulary.lua
 Spelling\Dictionary.lua
 Spelling\Engine.lua
 UI\Widgets.lua

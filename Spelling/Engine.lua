@@ -49,8 +49,8 @@ end
 
 -- Keep byte offsets aligned with the original edit box text. Hyperlinks and
 -- formatting stay intact when a user explicitly replaces a word.
-function Engine:Tokens(text)
-	local function spaces(value) return string.rep(" ", #value) end
+function Engine:Tokens(text, maskCharacter)
+	local function spaces(value) return string.rep(maskCharacter or " ", #value) end
 	local masked = text:gsub("|H.-|h.-|h", spaces)
 		:gsub("|T.-|t", spaces):gsub("|A.-|a", spaces)
 		:gsub("|c%x%x%x%x%x%x%x%x", spaces):gsub("|r", spaces)
@@ -58,7 +58,7 @@ function Engine:Tokens(text)
 		:gsub("[%w._%%+%-]+@[%w.%-]+%.[%a]+", spaces)
 		:gsub("{[^}]+}", spaces)
 	local tokens = {}
-	if text:match("^%s*/") then return tokens end
+	if text:match("^%s*/") then return tokens, "" end
 	local first, last, offset = nil, nil, 1
 	local function finish()
 		if first and not masked:sub(first - 1, first - 1):match("%d")
@@ -77,15 +77,17 @@ function Engine:Tokens(text)
 		offset = offset + #char
 	end
 	finish()
-	return tokens
+	return tokens, masked
 end
 
 function Engine:Check(text, options, ignored)
 	local issues = {}
-	for _, token in ipairs(self:Tokens(text)) do
+	local accepted = options.wowVocabulary and ns.WowVocabulary.Accepted(self, text) or {}
+	for index, token in ipairs(self:Tokens(text)) do
 		local word = normalize(token.word)
 		if U.Length(word) >= options.minLength and U.Length(word) <= 28 and U.IsWord(word)
 			and not (ignored and ignored[word])
+			and not accepted[index]
 			and not (options.ignoreUppercase and U.IsUpper(token.word))
 			and not self:Contains(word, options.wowVocabulary) then
 			token.normalized = word

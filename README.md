@@ -27,7 +27,7 @@ Item links and their formatting are preserved. The highlight colors are removed 
 - Enable up to two languages together for mixed-language chat, with accented letters supported.
 - Suggestions for missing letters, extra letters, swapped letters, and mistyped letters.
 - A wider search for longer words when the first and last letters match.
-- Built-in WoW vocabulary, including common spells, locations, classes, and chat shorthand.
+- Built-in WoW vocabulary for locations, bosses, spells, items, professions, player jargon, and classes.
 - Recognition of your character, party members, raid members, and target names for the current session.
 - A personal dictionary for names, guild terms, and your own shorthand.
 - Options for chat channels, highlight color, suggestion count, and suggestion-panel size.
@@ -44,6 +44,8 @@ The options have four pages:
 - **Chat channels:** choose which channels to check, including Say, Yell, Whispers, Guild, Officer, Party, Raid, Instance/Battleground, public/custom channels, and Emotes. Emote checking is off by default.
 - **Languages:** enable one or two spelling dictionaries. At least one must stay enabled; turn one off before selecting a replacement when two are active. Dutch (NL) and (BE) share OpenTaal data, including Belgian Dutch vocabulary.
 - **Personal words:** add or remove words, one per line, with up to 800 entries. Click **Save word list** to save your edits. You can also clear session ignores here.
+
+The WoW vocabulary option includes the supplied **WoW Multilingual Spellcheck — Forever** lists. English game names are shared across languages; localized terms follow your selected dictionaries (UK uses the English list, and NL/BE share the Dutch list). Complete names with multiple words use longest-name matching, with Unicode capitalization and accents supported. The additional lists accept names and abbreviations without adding them as correction suggestions. These are curated starter lists, not a complete database of every WoW name; Dutch entries include community terminology.
 
 General and channel settings save immediately. **Reset options** restores the default settings and keeps your personal dictionary.
 

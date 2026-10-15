@@ -48,6 +48,7 @@ function Dictionary:SetLanguages(languages)
 	signature = table.concat(signature, ",")
 	if self.languageSignature == signature then return end
 	self.languageSignature = signature
+	self.wowTrie, self.wowAccepted = ns.WowVocabulary.Build(languages)
 	self.english = languages.enUS or languages.enGB
 	self.words, self.byLength, self.elisionPacks = {}, {}, {}
 	local loaded = {}
@@ -120,7 +121,8 @@ function Dictionary:Contains(word, includeWow)
 	word = normalize(word)
 	local prefix, stem = word:match("^([^']+)'(.+)$")
 	return self.words[word] ~= nil or self.personal[word] or self.names[word]
-		or (includeWow and self.wow[word]) or (prefix and self:Elision(prefix, stem, false)) or false
+		or (includeWow and (self.wow[word] or self.wowAccepted[word]))
+		or (prefix and self:Elision(prefix, stem, false)) or false
 end
 
 -- Traverse a virtual prefix tree over sorted arrays. Rows are shared by words

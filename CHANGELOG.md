@@ -1,9 +1,16 @@
 # Changelog
 
+## 1.1.4 - 2026-10-15
+
+- Added the Forever multilingual vocabulary for locations, bosses, spells, items, professions, jargon, and classes, following the selected languages.
+- Recognize complete multiword WoW names and accented capitalization through the WoW vocabulary option. Added terms are accepted without adding abbreviation correction suggestions.
+
 ## 1.1.3 - 2026-10-13
 
 - Fixed messages failing to send with Enter in dungeon party chat and raid
-  chat.
+  chat by preserving Blizzard's native Enter and send handlers. Spelling
+  display colors are removed before native message validation.
+- Verified party, raid, and instance chat sending in game.
 
 ## 1.1.2 - 2026-10-09
 

@@ -1,0 +1,44 @@
+-- Generated WoW spellchecker dictionary. Locale: esES; category: Professions
+-- English names + aliases are intentionally accepted for international chat.
+-- Locale variants are curated and incomplete; no claim of full client translation.
+local _, ns = ...
+ns.WowLanguagePacks = ns.WowLanguagePacks or {}
+ns.WowLanguagePacks["esES"] = ns.WowLanguagePacks["esES"] or {}
+local vocabulary = ns.WowLanguagePacks["esES"]
+vocabulary["Professions"] = vocabulary["Professions"] or {}
+local words = vocabulary["Professions"]
+words["Alchemy"] = true
+words["Alquimia"] = true
+words["Blacksmithing"] = true
+words["BS"] = true
+words["Cocina"] = true
+words["Cooking"] = true
+words["Desuello"] = true
+words["Encantamiento"] = true
+words["Enchant"] = true
+words["Enchanting"] = true
+words["Engi"] = true
+words["Engineering"] = true
+words["First Aid"] = true
+words["Fishing"] = true
+words["Herb"] = true
+words["Herbalism"] = true
+words["Herboristería"] = true
+words["herboristería"] = true
+words["herrería"] = true
+words["Herrería"] = true
+words["Ingeniería"] = true
+words["ingeniería"] = true
+words["Leatherworking"] = true
+words["LW"] = true
+words["Minería"] = true
+words["minería"] = true
+words["Mining"] = true
+words["Peletería"] = true
+words["peletería"] = true
+words["Pesca"] = true
+words["Primeros auxilios"] = true
+words["Sastrería"] = true
+words["sastrería"] = true
+words["Skinning"] = true
+words["Tailoring"] = true
