@@ -200,6 +200,8 @@ function Engine:Suggest(word, options, yieldWork)
 		if not forced and distance > candidateLimit then return end
 		seen[candidate] = true
 		local score = distance + (self.common[candidate] and 0.2 or 0.45)
+		-- Prefer a known hyphenated spelling over a speculative space split.
+		if self.words[candidate] and candidate:find("-", 1, true) then score = distance + 0.15 end
 		if options.wowVocabulary and self.wow[candidate] then score = distance + 0.08 end
 		if self.personal[candidate] then score = distance + 0.1 end
 		if self.english and candidate:sub(-2) == "ed" and word:sub(-1) == "d" then score = score - 0.08 end

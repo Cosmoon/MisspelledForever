@@ -27,6 +27,7 @@ Item links and their formatting are preserved. The highlight colors are removed 
 - Enable up to two languages together for mixed-language chat, with accented letters supported.
 - Suggestions for missing letters, extra letters, swapped letters, and mistyped letters.
 - Missing-space suggestions in every enabled language, such as “goodevening” → “good evening”, when both parts are recognized words.
+- Missing-hyphen suggestions from the enabled dictionaries, including “ingame” → “in-game” in English.
 - A wider search for longer words when the first and last letters match.
 - Built-in WoW vocabulary for locations, bosses, spells, items, professions, player jargon, and classes.
 - Recognition of your character, party members, raid members, and target names for the current session.

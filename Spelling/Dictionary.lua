@@ -71,6 +71,17 @@ function Dictionary:SetLanguages(languages)
 			end)
 		end
 	end
+	-- Retain source-validated hyphenated forms in the normal suggestion index.
+	for language in pairs(languages) do
+		for word in ((ns.HyphenatedWords or {})[language] or ""):gmatch("%S+") do
+			if self.words[word] == nil then
+				local length = U.Length(word)
+				self.byLength[length] = self.byLength[length] or {}
+				table.insert(self.byLength[length], word)
+			end
+			self.words[word] = true
+		end
+	end
 	-- Elisions share a stem plus a compact set of permitted prefixes. This
 	-- avoids expanding millions of l'/d'/all' variants into the active index.
 	local indexed = {}

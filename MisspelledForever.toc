@@ -2,7 +2,7 @@
 ## Title: MisspelledForever
 ## Notes: Local chat spelling checks, useful corrections, and a personal dictionary.
 ## Author: Cosmoon
-## Version: 1.1.5
+## Version: 1.1.6
 ## IconTexture: Interface\AddOns\MisspelledForever\Assets\MisspelledForeverLogo.tga
 ## SavedVariables: MisspelledForeverDB
 
@@ -56,6 +56,7 @@ Data\WoW\nlNL\Jargon.lua
 Data\WoW\nlNL\Locations.lua
 Data\WoW\nlNL\Professions.lua
 Data\WoW\nlNL\Spells.lua
+Data\Hyphenated.lua
 Spelling\Languages.lua
 Spelling\Unicode.lua
 Spelling\WowVocabulary.lua
