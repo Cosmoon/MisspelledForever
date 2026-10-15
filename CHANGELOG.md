@@ -1,10 +1,5 @@
 # Changelog
 
-## Unreleased
-
-- Added support for Retail WoW (Interface 120105). WoW Forever remains the primary
-  supported version.
-
 ## 1.1.3 - 2026-10-13
 
 - Fixed messages failing to send with Enter in dungeon party chat and raid
