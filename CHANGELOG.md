@@ -1,14 +1,11 @@
 # Changelog
 
-## 1.1.6 - 2026-10-15
-
-- Added missing-hyphen corrections from the enabled dictionaries, including "ingame" to "in-game" in English and words with multiple hyphens.
-- Added validated hyphenated dictionary forms and common English compounds. Prefer known hyphenated spellings over speculative space splits and preserve capitalization when applying corrections.
-
 ## 1.1.5 - 2026-10-15
 
 - Added missing-space suggestions in all enabled dictionary languages, such as "goodevening" to "good evening", when both parts are recognized words.
 - Preserve capitalization when applying split-word corrections and keep recognized compound words intact.
+- Added missing-hyphen corrections from the enabled dictionaries, including "ingame" to "in-game" in English and words with multiple hyphens.
+- Added validated hyphenated dictionary forms and common English compounds. Prefer known hyphenated spellings over speculative space splits and preserve capitalization when applying corrections.
 
 ## 1.1.4 - 2026-10-15
 
