@@ -185,8 +185,8 @@ function Engine:Suggest(word, options, yieldWork)
 		end
 		return matched >= required
 	end
-	local function add(candidate, forced, knownDistance)
-		if prefix and not self:Elision(prefix, candidate, true) then return end
+	local function add(candidate, forced, knownDistance, split)
+		if prefix and not self:Elision(prefix, split or candidate, true) then return end
 		if seen[candidate] or candidate == word then return end
 		local ascii = not candidate:find("[\128-\255]")
 		local candidateChars = ascii and candidate or U.Characters(candidate)
@@ -235,6 +235,23 @@ function Engine:Suggest(word, options, yieldWork)
 			if not self:Contains(piece, options.wowVocabulary) then valid = false end
 		end
 		if valid then add(hint, true) end
+	end
+	-- A missing space is one edit. Try each Unicode character boundary using
+	-- only words eligible for suggestions in the currently enabled dictionaries.
+	local function suggestible(piece)
+		if not U.IsWord(piece) then return false end
+		local p, s = piece:match("^([^']+)'(.+)$")
+		return self.words[piece] or self.personal[piece]
+			or (options.wowVocabulary and self.wow[piece])
+			or (p and self:Elision(p, s, true))
+	end
+	if not self:Contains((prefix and prefix .. "'" or "") .. word, options.wowVocabulary) then
+		for boundary = 1, length - 1 do
+			local left = table.concat(chars, "", 1, boundary)
+			local right = table.concat(chars, "", boundary + 1, length)
+			local validLeft = prefix and self:Elision(prefix, left, true) or (not prefix and suggestible(left))
+			if validLeft and suggestible(right) then add(left .. " " .. right, false, 1, left) end
+		end
 	end
 	if rawget(self, "searchSorted") then
 		ns.Dictionary.VisitSimilar(self, chars, closeLimit, limit, function(candidate, distance)

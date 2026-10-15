@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.5 - 2026-10-15
+
+- Added missing-space suggestions in all enabled dictionary languages, such as "goodevening" to "good evening", when both parts are recognized words.
+- Preserve capitalization when applying split-word corrections and keep recognized compound words intact.
+
 ## 1.1.4 - 2026-10-15
 
 - Added the Forever multilingual vocabulary for locations, bosses, spells, items, professions, jargon, and classes, following the selected languages.
