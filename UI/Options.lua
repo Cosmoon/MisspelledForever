@@ -33,7 +33,7 @@ local function buildOptions(parent)
 			function(value) ns.SetOption(key, value) end))
 	end
 	option(general, "enabled", "Enable spelling checks", "Checks outgoing chat as you type. Corrections are applied only when you choose one.", 16, -25)
-	option(general, "showHighlights", "Color possible spelling mistakes", "Colors completed words in the chat box. Click a colored word for suggestions. Suggestions never open automatically.", 16, -55)
+	option(general, "showHighlights", "Color possible spelling mistakes", "Colors completed words in the chat box. Uses a contrasting color when your chosen color is too close to the channel text. Click a colored word for suggestions. Suggestions never open automatically.", 16, -55)
 	option(general, "wowVocabulary", "Recognize WoW terms and chat shorthand", "Accepts common spells, places, classes, and terms such as LFG, aggro, and hearthstone.", 16, -85)
 	option(general, "ignoreUppercase", "Ignore words written in ALL CAPS", "Useful for abbreviations. Disable this if you want uppercase misspellings checked too.", 16, -115)
 	label(general, "MINIMAP", 20, -158, "GameFontNormal")

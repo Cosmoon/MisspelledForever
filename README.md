@@ -6,7 +6,7 @@ Inspired by **Misspelled**, created by [nrpieper](https://www.curseforge.com/mem
 
 ## How to use it
 
-Type your message as usual. Once you finish a word with a space or punctuation, the addon checks its spelling. Words it does not recognize appear in your chosen highlight color.
+Type your message as usual. Once you finish a word with a space or punctuation, the addon checks its spelling. Words it does not recognize appear in your chosen highlight color. If that color is too close to the active chat text color, a contrasting highlight is used automatically for that channel.
 
 Click a colored word to see suggestions, then click the spelling you want. The complete suggestion list appears together. Only that occurrence is replaced, and its capitalization is preserved. You can also right-click a word to check it before typing a space.
 

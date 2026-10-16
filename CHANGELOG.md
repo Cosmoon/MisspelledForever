@@ -2,6 +2,7 @@
 
 ## 1.1.5 - 2026-10-15
 
+- Automatically use a contrasting misspelling highlight when the chosen color is too close to the active channel text, including emotes. Keep the saved color unchanged and restore it in other channels.
 - Added missing-space suggestions in all enabled dictionary languages, such as "goodevening" to "good evening", when both parts are recognized words.
 - Preserve capitalization when applying split-word corrections and keep recognized compound words intact.
 - Added missing-hyphen corrections from the enabled dictionaries, including "ingame" to "in-game" in English and words with multiple hyphens.

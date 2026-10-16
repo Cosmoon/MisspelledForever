@@ -36,6 +36,28 @@ function UI:ClearMarks(box)
 	end
 end
 
+-- Compare against the edit box's actual text color, including custom channel colors.
+-- Keep the saved preference unchanged; only the displayed highlight can differ.
+local alternatives = { {0.2, 0.85, 1}, {1, 0.25, 0.8}, {1, 1, 0.2}, {0.4, 1, 0.3} }
+local function highlightColor(box)
+	local chosen = ns.db.highlightColor
+	if not box.GetTextColor then return chosen end
+	local r, g, b = box:GetTextColor()
+	if issecretvalue and (issecretvalue(r) or issecretvalue(g) or issecretvalue(b)) then return chosen end
+	if type(r) ~= "number" or type(g) ~= "number" or type(b) ~= "number" then return chosen end
+	local function distance(color)
+		return 0.299 * (color[1] - r)^2 + 0.587 * (color[2] - g)^2 + 0.114 * (color[3] - b)^2
+	end
+	-- A weighted RGB distance below 0.2 is treated as visually too similar.
+	if distance(chosen) >= 0.04 then return chosen end
+	local best, bestDistance = chosen, 0
+	for _, color in ipairs(alternatives) do
+		local value = distance(color)
+		if value > bestDistance then best, bestDistance = color, value end
+	end
+	return best
+end
+
 function UI:ShowMarks(box, issues)
 	local marker = self.markers[box]
 	if not marker then
@@ -44,7 +66,7 @@ function UI:ShowMarks(box, issues)
 	end
 	local raw, cursor = self:RawText(box)
 	marker.text, marker.issues, marker.ranges = raw, issues, issues
-	local color = ns.db.highlightColor
+	local color = highlightColor(box)
 	-- The private alpha value distinguishes these tags from ordinary |cff
 	-- item-link colors. Visually it is effectively opaque.
 	local prefix = string.format("|cfe%02x%02x%02x", math.floor(color[1]*255+0.5),
